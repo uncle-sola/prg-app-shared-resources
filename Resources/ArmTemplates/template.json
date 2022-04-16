@@ -134,7 +134,8 @@
             },
             "dependsOn": [
                 "[variables('MonitoringAppServicePlanName')]",
-                "[variables('MonitoringAppInsightsName')]"
+                "[variables('MonitoringAppInsightsName')]",
+                "[resourceId('Microsoft.Resources/deployments', 'appSharedStorageAccount')]"
             ],
             "properties": {
                 "httpsOnly": true,
