@@ -19,6 +19,6 @@ jobs:
     vmImage: 'windows-latest'
 
   steps:
-  - template: AzureDevOpsTemplates/Build/StepTemplates/mon-arm-build.yml@prg-devops
+  - template: AzureDevOpsTemplates/Build/StepTemplates/prg-arm-build.yml@prg-devops
     parameters:
       ArmTemplateRoot: $(ArmTemplateRoot)
