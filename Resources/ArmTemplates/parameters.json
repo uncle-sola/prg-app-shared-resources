@@ -1,0 +1,31 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+
+        "environment": {
+            "value": "__ReleaseEnvironmentName__"
+        },
+        "slackWebHookToken": {
+            "value": "__slackWebhookToken__"
+        },
+        "slackChannelForAlerts": {
+            "value": "__slackChannelForAlerts__"
+        },
+        "slackWebhookTokenPayStack": {
+            "value": "__slackWebhookTokenPayStack__"
+        },
+        "slackChannelForPayStackAlerts": {
+            "value": "__slackChannelForPayStackAlerts__"
+        },
+        "emailAddressForAlerts": {
+            "value": "__emailAddressForAlerts__"
+        },
+        "enableAlerts": {
+            "value": __EnableAzureMonitorAlerting__
+        },
+        "payStackSecret": {
+            "value": "__payStackSecret__"
+        }
+    }
+}

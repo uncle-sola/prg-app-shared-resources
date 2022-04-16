@@ -1,0 +1,364 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "environment": {
+            "type": "string"
+        },
+        "slackWebHookToken": {
+            "type": "securestring",
+            "metadata": {
+                "description": "the token (everything after https://hooks.slack.com/services/) for an incoming webhook in slack"
+            }
+        },
+        "slackChannelForAlerts": {
+            "type": "string",
+            "metadata": {
+                "description": "The slack channel to send alerts to"
+            }
+        },
+        "slackWebhookTokenPayStack": {
+            "type": "securestring",
+            "metadata": {
+                "description": "the token (everything after https://hooks.slack.com/services/) for an incoming webhook in slack from paystack"
+            }
+        },
+        "slackChannelForPayStackAlerts": {
+            "type": "string",
+            "metadata": {
+                "description": "The paystack slack channel to send alerts to"
+            }
+        },
+        "payStackSecret": {
+            "type": "securestring",
+            "metadata": {
+                "description": "The pay stack secret"
+            }
+        },
+        "emailAddressForAlerts": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "An email address to send alerts to"
+            }
+        },
+        "enableAlerts": {
+            "type": "bool",
+            "metadata": {
+                "description": "Enable or disable alerting"
+            }
+        }
+    },
+    "variables": {
+        "deploymentUrlBase": "https://raw.githubusercontent.com/olusola-adio/mon-devops/master/ArmTemplates/",
+        "resourcePrefix": "[tolower(concat('prg-', parameters('environment'), '-app-sharedresources'))]",
+        "storageAccountName": "[tolower(concat('prg', parameters('environment'), 'appsharedstr'))]",
+        "MonitoringAppServicePlanName": "[concat(variables('ResourcePrefix'), '-mon-asp')]",
+        "MonitoringAppInsightsName": "[concat(variables('ResourcePrefix'), '-mon-ai')]",
+        "MonitoringFunctionAppName": "[concat(variables('ResourcePrefix'), '-mon-fa')]",
+        "ActionGroupName": "[concat(variables('ResourcePrefix'), '-actgrp')]",
+        "containerRegistryName": "[tolower(concat('prg', parameters('environment'), 'appsharedcr'))]",
+        "storageAccountId": "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+    },
+    "resources": [
+        {
+            "name": "containerRegistry",
+            "type": "Microsoft.Resources/deployments",
+            "condition": "[or(equals(parameters('environment'), 'DEV'), equals(parameters('environment'), 'PRD'))]",
+            "apiVersion": "2017-05-10",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('deploymentUrlBase'), 'container-registry.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "containerRegistryName": {
+                        "value": "[variables('containerRegistryName')]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "appSharedStorageAccount",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2017-05-10",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('deploymentUrlBase'),'storage-account.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "storageAccountName": {
+                        "value": "[variables('storageAccountName')]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "[variables('MonitoringAppServicePlanName')]",
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2018-02-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "name": "[variables('MonitoringAppServicePlanName')]",
+                "computeMode": "Dynamic"
+            },
+            "sku": {
+                "name": "Y1",
+                "tier": "Dynamic"
+            }
+        },
+        {
+            "apiVersion": "2015-05-01",
+            "name": "[variables('MonitoringAppInsightsName')]",
+            "type": "Microsoft.Insights/components",
+            "location": "[resourceGroup().location]",
+            "kind": "web",
+            "tags": {
+                "[concat('hidden-link:', resourceId('Microsoft.Web/sites', variables('MonitoringAppInsightsName')))]": "Resource"
+            },
+            "properties": {
+                "Application_Type": "web"
+            }
+        },
+        {
+            "name": "[variables('MonitoringFunctionAppName')]",
+            "apiVersion": "2018-11-01",
+            "type": "Microsoft.Web/sites",
+            "location": "[resourceGroup().location]",
+            "kind": "functionapp",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "dependsOn": [
+                "[variables('MonitoringAppServicePlanName')]",
+                "[variables('MonitoringAppInsightsName')]"
+            ],
+            "properties": {
+                "httpsOnly": true,
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[reference(concat('microsoft.insights/components/', variables('MonitoringAppInsightsName'))).InstrumentationKey]"
+                        },
+                        {
+                            "name": "AzureWebJobsStorage",
+                            "value": "[reference('appSharedStorageAccount').outputs.storageConnectionString.value]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                            "value": "[reference('appSharedStorageAccount').outputs.storageConnectionString.value]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTSHARE",
+                            "value": "[variables('MonitoringFunctionAppName')]"
+                        },
+                        {
+                            "name": "FUNCTIONS_WORKER_RUNTIME",
+                            "value": "powershell"
+                        },
+                        {
+                            "name": "FUNCTIONS_EXTENSION_VERSION",
+                            "value": "~3"
+                        },
+                        {
+                            "name": "FUNCTIONS_WORKER_RUNTIME_VERSION",
+                            "value": "~7"
+                        },
+                        {
+                            "name": "SlackToken",
+                            "value": "[parameters('slackWebHookToken')]"
+                        },
+                        {
+                            "name": "SlackTokenPayStack",
+                            "value": "[parameters('slackWebhookTokenPayStack')]"
+                        },
+                        {
+                            "name": "PayStackSecret",
+                            "value": "[parameters('payStackSecret')]"
+                        },
+                        {
+                            "name": "PayStackSlackChannel",
+                            "value": "[parameters('slackChannelForPayStackAlerts')]"
+                        },
+                        {
+                            "name": "MSDEPLOY_RENAME_LOCKED_FILES",
+                            "value": "1"
+                        },
+                        {
+                            "name": "StorageAccountKey",
+                            "value": "[listKeys(variables('storageAccountId'), '2019-04-01').keys[0].value]"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "[variables('ActionGroupName')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-05-01",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('deploymentUrlBase'), 'Application-Insights/action-groups.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "actionGroupName": {
+                        "value": "[variables('ActionGroupName')]"
+                    },
+                    "enabled": {
+                        "value": "[parameters('enableAlerts')]"
+                    },
+                    "webHookUrl": {
+                        "value": "[concat('https://', variables('MonitoringFunctionAppName'), '.azurewebsites.net/api/MonitorAlert?code=', listkeys(concat(resourceId('Microsoft.Web/sites', variables('MonitoringFunctionAppName')), '/host/default'), '2018-11-01').functionKeys.default, '&channel=', parameters('slackChannelForAlerts'))]"
+                    },
+                    "emailAddress": {
+                        "value": "[parameters('emailAddressForAlerts')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[variables('MonitoringFunctionAppName')]"
+            ]
+        },
+        {
+            "apiVersion": "2019-05-01",
+            "name": "[concat(variables('MonitoringAppInsightsName'), '-metric-exceptions')]",
+            "type": "Microsoft.Resources/deployments",
+            "dependsOn": [
+                "[variables('MonitoringFunctionAppName')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('deploymentUrlBase'), 'Application-Insights/metric-alerts.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "enabled": {
+                        "value": "[parameters('enableAlerts')]"
+                    },
+                    "alertName": {
+                        "value": "[concat(variables('MonitoringAppInsightsName'), '-metric-exceptions')]"
+                    },
+                    "alertSeverity": {
+                        "value": 3
+                    },
+                    "metricName": {
+                        "value": "exceptions/count"
+                    },
+                    "operator": {
+                        "value": "GreaterThan"
+                    },
+                    "threshold": {
+                        "value": "0"
+                    },
+                    "aggregation": {
+                        "value": "Count"
+                    },
+                    "windowSize": {
+                        "value": "PT5M"
+                    },
+                    "evaluationFrequency": {
+                        "value": "PT1M"
+                    },
+                    "actionGroupName": {
+                        "value": "[variables('ActionGroupName')]"
+                    },
+                    "actionGroupResourceGroup": {
+                        "value": "[resourceGroup().name]"
+                    },
+                    "resourceId": {
+                        "value": "[resourceId('Microsoft.Insights/Components', variables('MonitoringAppInsightsName'))]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2019-05-01",
+            "name": "[concat(variables('MonitoringAppInsightsName'), '-metric-requests')]",
+            "type": "Microsoft.Resources/deployments",
+            "dependsOn": [
+                "[variables('MonitoringFunctionAppName')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('deploymentUrlBase'), 'Application-Insights/metric-alerts.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "enabled": {
+                        "value": "[parameters('enableAlerts')]"
+                    },
+                    "alertName": {
+                        "value": "[concat(variables('MonitoringAppInsightsName'), '-metric-requests')]"
+                    },
+                    "alertSeverity": {
+                        "value": 3
+                    },
+                    "metricName": {
+                        "value": "requests/count"
+                    },
+                    "operator": {
+                        "value": "GreaterThan"
+                    },
+                    "threshold": {
+                        "value": "4"
+                    },
+                    "aggregation": {
+                        "value": "Count"
+                    },
+                    "windowSize": {
+                        "value": "PT5M"
+                    },
+                    "evaluationFrequency": {
+                        "value": "PT1M"
+                    },
+                    "actionGroupName": {
+                        "value": "[variables('ActionGroupName')]"
+                    },
+                    "actionGroupResourceGroup": {
+                        "value": "[resourceGroup().name]"
+                    },
+                    "resourceId": {
+                        "value": "[resourceId('Microsoft.Insights/Components', variables('MonitoringAppInsightsName'))]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2019-05-01",
+            "name": "[concat(variables('MonitoringAppInsightsName'), '-failure-anomaly-v2')]",
+            "type": "Microsoft.Resources/deployments",
+            "dependsOn": [
+                "[variables('MonitoringAppInsightsName')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('deploymentUrlBase'), 'Application-Insights/failure-anomaly-rule.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "alertName": {
+                        "value": "[concat(variables('MonitoringAppInsightsName'), '-failure-anomaly-v2')]"
+                    },
+                    "enabled": {
+                        "value": "[parameters('enableAlerts')]"
+                    },
+                    "resourceId": {
+                        "value": "[resourceId('Microsoft.Insights/Components', variables('MonitoringAppInsightsName'))]"
+                    },
+                    "actionGroupId": {
+                        "value": "[resourceId(resourceGroup().location, 'microsoft.insights/actionGroups', variables('ActionGroupName'))]"
+                    }
+                }
+            }
+        }
+    ]
+}

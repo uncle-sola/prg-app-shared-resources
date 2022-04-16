@@ -1,0 +1,24 @@
+variables:
+    ArmTemplateRoot: '$(Build.SourcesDirectory)\Resources\ArmTemplates' 
+    ApimPolicyRoot: '$(Build.SourcesDirectory)\Resources\ApimPolicies'
+
+resources:
+  repositories:
+  - repository: self
+  - repository: prg-devops
+    type: github
+    name: uncle-sola/prg-devops
+    endpoint: 'GitHub (PRG)'
+    ref: refs/tags/v1.11.2
+
+jobs:
+
+- job: BuildAndTestArmTemplate
+  displayName: BuildAndTestArmTemplate
+  pool:
+    vmImage: 'windows-latest'
+
+  steps:
+  - template: AzureDevOpsTemplates/Build/StepTemplates/mon-arm-build.yml@prg-devops
+    parameters:
+      ArmTemplateRoot: $(ArmTemplateRoot)
