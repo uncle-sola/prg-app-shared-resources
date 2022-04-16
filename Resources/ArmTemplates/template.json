@@ -135,7 +135,7 @@
             "dependsOn": [
                 "[variables('MonitoringAppServicePlanName')]",
                 "[variables('MonitoringAppInsightsName')]",
-                "[resourceId('Microsoft.Resources/deployments', 'appSharedStorageAccount')]"
+                "appSharedStorageAccount"
             ],
             "properties": {
                 "httpsOnly": true,
@@ -231,7 +231,8 @@
             "name": "[concat(variables('MonitoringAppInsightsName'), '-metric-exceptions')]",
             "type": "Microsoft.Resources/deployments",
             "dependsOn": [
-                "[variables('MonitoringFunctionAppName')]"
+                "[variables('MonitoringFunctionAppName')]",
+                "[variables('ActionGroupName')]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -284,7 +285,8 @@
             "name": "[concat(variables('MonitoringAppInsightsName'), '-metric-requests')]",
             "type": "Microsoft.Resources/deployments",
             "dependsOn": [
-                "[variables('MonitoringFunctionAppName')]"
+                "[variables('MonitoringFunctionAppName')]",
+                "[variables('ActionGroupName')]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -337,7 +339,8 @@
             "name": "[concat(variables('MonitoringAppInsightsName'), '-failure-anomaly-v2')]",
             "type": "Microsoft.Resources/deployments",
             "dependsOn": [
-                "[variables('MonitoringAppInsightsName')]"
+                "[variables('MonitoringAppInsightsName')]",
+                "[variables('ActionGroupName')]"
             ],
             "properties": {
                 "mode": "Incremental",
