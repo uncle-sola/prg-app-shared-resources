@@ -135,7 +135,7 @@
             "dependsOn": [
                 "[variables('MonitoringAppServicePlanName')]",
                 "[variables('MonitoringAppInsightsName')]",
-                "[variables('storageAccountId')]"
+                "appSharedStorageAccount"
             ],
             "properties": {
                 "httpsOnly": true,
