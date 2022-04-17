@@ -3,19 +3,19 @@
 Posts an Azure Monitor alert from an action group webhook to Slack
 
 .DESCRIPTION
-This azure function takes a HTTP post request,  and posts a message into Slack. 
+This azure function takes a HTTP post request,  and posts a message into Slack.
 
 It requires:
 
 * A POST request be made to /api/MonitorAlert.
 
-* The request must have a "channel" parameter on the query string, and will return a Bad Request status code if it does not.  
+* The request must have a "channel" parameter on the query string, and will return a Bad Request status code if it does not.
 This value is the channel (minus the #) that the message will be posted to.
 
-* The environment must have a "SlackToken" variable, containing the slack token to use to post to slack with.  
+* The environment must have a "SlackToken" variable, containing the slack token to use to post to slack with.
 The request will return a HTTP bad status if it does not exist.
 
-*  The request body must contain the json for the alert.  
+*  The request body must contain the json for the alert.
 
 A schema for the payload can be found at the following link:
 
