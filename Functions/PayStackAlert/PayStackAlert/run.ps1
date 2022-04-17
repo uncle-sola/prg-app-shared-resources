@@ -43,7 +43,7 @@ param($Request, $TriggerMetadata)
 
 Import-Module PayStackAlertHelperModule
 
-Write-Host "PowerShell HTTP trigger function processed a request."
+Write-Host "PowerShell HTTP trigger function processed a request with $($TriggerMetadata)."
 
 $channel = $Request.Query.Channel
 $slackToken = $env:SLACKTOKENPAYSTACK
@@ -62,7 +62,7 @@ $slackToken = $env:SLACKTOKENPAYSTACK
 #       }
 #       Console.WriteLine(result);
 #       String xpaystackSignature = ""; //put in the request's header value for x-paystack-signature
-  
+
 #       if(result.ToLower().Equals(xpaystackSignature)) {
 #           // you can trust the event, it came from paystack
 #           // respond with the http 200 response immediately before attempting to process the response
@@ -72,38 +72,38 @@ $slackToken = $env:SLACKTOKENPAYSTACK
 #       }
 
 if ([string]::IsNullOrWhiteSpace($channel)) {
-    Push-OutputBindingWrapper -Status BadRequest -Body "channel not specified in query"   
+    Push-OutputBindingWrapper -Status BadRequest -Body "channel not specified in query"
     return
 }
 
 if ([string]::IsNullOrWhiteSpace($slackToken)) {
-    Push-OutputBindingWrapper -Status BadRequest -Body "Slack token not specified"   
-    return 
+    Push-OutputBindingWrapper -Status BadRequest -Body "Slack token not specified"
+    return
 }
 
 $secret = $env:PAYSTACKSECRET
 if ([string]::IsNullOrWhiteSpace($secret)) {
-    Push-OutputBindingWrapper -Status BadRequest -Body "PayStack secret not specified"   
-    return 
+    Push-OutputBindingWrapper -Status BadRequest -Body "PayStack secret not specified"
+    return
 }
 
 $storageAccountkey = $env:STORAGEACCOUNTKEY
 if ([string]::IsNullOrWhiteSpace($storageAccountkey)) {
-    Push-OutputBindingWrapper -Status BadRequest -Body "StorageAccountKey key not specified"   
-    return 
+    Push-OutputBindingWrapper -Status BadRequest -Body "StorageAccountKey key not specified"
+    return
 }
 
-if($null -eq $request.Body) { 
+if($null -eq $request.Body) {
     Push-OutputBindingWrapper -Status BadRequest -Body "Unable to parse body as json"
     return
 }
 
-if($null -eq $request.Body.data) { 
+if($null -eq $request.Body.data) {
     Push-OutputBindingWrapper -Status BadRequest -Body "Unable to parse data as json"
     return
 }
 
-if($null -eq $request.Body.event) { 
+if($null -eq $request.Body.event) {
     Push-OutputBindingWrapper -Status BadRequest -Body "Unable to parse event as json"
     return
 }
@@ -112,7 +112,7 @@ if($null -eq $request.Body.event) {
 $body = $request.Body | ConvertTo-Json -Depth 4
 Write-Information "body $($body)" -Verbose
 
-$jsonRequest = @{    
+$jsonRequest = @{
     paystack = "request"
     body = "$body"
 }
@@ -185,12 +185,12 @@ if ($SendSlack -eq "no") {
     Write-Information "Send message"
     $message = New-SlackMessageFromAlert -Alert $Request.Body -Channel $channel
 
-    try {    
+    try {
         Send-MessageToSlack -SlackToken $slackToken -Message $message
     }
     catch {
         Push-OutputBindingWrapper -Status BadRequest -Body ("Unable to send slack message:", $_.Exception.Message)
-        return     
+        return
     }
 
     Push-OutputBindingWrapper -Status OK -Body "success"

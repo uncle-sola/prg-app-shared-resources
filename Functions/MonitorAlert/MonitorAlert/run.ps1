@@ -44,34 +44,34 @@ param($Request, $TriggerMetadata)
 
 Import-Module MonitorAlertHelperModule
 
-Write-Host "PowerShell HTTP trigger function processed a request."
+Write-Host "PowerShell HTTP trigger function processed a request with $($TriggerMetadata)."
 
 $channel = $Request.Query.Channel
 $slackToken = $env:SLACKTOKEN
 
 if ([string]::IsNullOrWhiteSpace($channel)) {
-    Push-OutputBindingWrapper -Status BadRequest -Body "channel not specified in query"   
+    Push-OutputBindingWrapper -Status BadRequest -Body "channel not specified in query"
     return
 }
 
 if ([string]::IsNullOrWhiteSpace($slackToken)) {
-    Push-OutputBindingWrapper -Status BadRequest -Body "Slack token not specified"   
+    Push-OutputBindingWrapper -Status BadRequest -Body "Slack token not specified"
     return
 }
 
-if($null -eq $request.Body) { 
+if($null -eq $request.Body) {
     Push-OutputBindingWrapper -Status BadRequest -Body "Unable to parse body as json"
     return
 }
 
 $message = New-SlackMessageFromAlert -Alert $Request.Body.data -Channel $channel
 
-try {    
+try {
     Send-MessageToSlack -SlackToken $slackToken -Message $message
 }
 catch {
     Push-OutputBindingWrapper -Status BadRequest -Body ("Unable to send slack message:", $_.Exception.Message)
-    return     
+    return
 }
 
 Push-OutputBindingWrapper -Status OK -Body "Message successfully sent to slack!"
