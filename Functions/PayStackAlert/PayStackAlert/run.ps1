@@ -125,9 +125,6 @@ Write-Information "jsonObject  $($jsonObject)" -Verbose
 
 $jsonString = $jsonObject
 
-
-
-
 $hmacsha = New-Object System.Security.Cryptography.HMACSHA512
 $hmacsha.key = [Text.Encoding]::ASCII.GetBytes($secret)
 $signature = $hmacsha.ComputeHash([Text.Encoding]::ASCII.GetBytes($jsonString))
@@ -138,15 +135,12 @@ Write-Information "Computed signature $($signature)" -Verbose
 $suppliedSignature = $Request.Headers["x-paystack-signature"]
 Write-Information "Supplied signature $($suppliedSignature)" -Verbose
 
-
 # Do we get the expected signature?
-if ($signature -ne $suppliedSignature) {
+if ($signature -ne $suppliedSignature){
     # Push-OutputBindingWrapper -Status BadRequest -Body "Failed Signature test"
     Write-Information "Failed Signature test"
     #return
 }
-
-
 
 # $tableStorageCurr = Get-Content $inputTable -Raw | ConvertFrom-Json
 
@@ -169,7 +163,7 @@ if ($signature -ne $suppliedSignature) {
 # $tableStorageItems | ConvertTo-Json | Out-File -Encoding UTF8 $outputTable
 
 # Write-Information "Added new record"
-# #Add-AzTableRow -table $cloudTable -partitionKey $($Alert.event) -rowKey $($Alert.Data.id) -property @{"payStackId"=$($Alert.Data.id)} 
+# #Add-AzTableRow -table $cloudTable -partitionKey $($Alert.event) -rowKey $($Alert.Data.id) -property @{"payStackId"=$($Alert.Data.id)}
 
 $SendSlack = Test-ShouldSendSlackMessage -Alert $Request.Body -storageAccountKey $storageAccountkey
 #$SendSlack = [System.Convert]::ToString($objSendSlack)
@@ -179,9 +173,7 @@ if ($SendSlack -eq "no") {
     Write-Information "Dont send message"
     Push-OutputBindingWrapper -Status OK -Body "success"
     return
-
 } else {
-
     Write-Information "Send message"
     $message = New-SlackMessageFromAlert -Alert $Request.Body -Channel $channel
 
@@ -195,4 +187,3 @@ if ($SendSlack -eq "no") {
 
     Push-OutputBindingWrapper -Status OK -Body "success"
 }
-
