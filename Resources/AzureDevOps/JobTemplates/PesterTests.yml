@@ -15,9 +15,9 @@ jobs:
   - task: PowerShell@2
     displayName: 'Executing Pester Tests'
     inputs:
-      filePath: '$(System.DefaultWorkingDirectory)\tests\Pester\Pester.ps1'
-      workingDirectory: '$(System.DefaultWorkingDirectory)'
-      arguments: '-TestsPath $(System.DefaultWorkingDirectory)\${{ parameters.TestsPath }} -ResultsPath $(System.DefaultWorkingDirectory)\${{ parameters.ResultsPath }} -Publish -TestResultsFile ${{ parameters.TestResultsFile }} -CodeCoverageResultsFile ${{ parameters.CodeCoverageResultsFile }} -Tag ${{ parameters.Tag }}'
+      filePath: '$(Build.SourcesDirectory)\tests\Pester\Pester.ps1'
+      workingDirectory: '$(Build.SourcesDirectory)'
+      arguments: '-TestsPath $(Build.SourcesDirectory)\${{ parameters.TestsPath }} -ResultsPath $(System.DefaultWorkingDirectory)\${{ parameters.ResultsPath }} -Publish -TestResultsFile ${{ parameters.TestResultsFile }} -CodeCoverageResultsFile ${{ parameters.CodeCoverageResultsFile }} -Tag ${{ parameters.Tag }}'
       errorActionPreference: 'silentlyContinue'
       ignoreLASTEXITCODE: true
   - task: PublishTestResults@2
