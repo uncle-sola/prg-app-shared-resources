@@ -30,6 +30,8 @@ stages:
       CodeCoverageResultsFile: 'Pester-Coverage.xml'
       TestResultsFile: 'Test-Pester.xml'
       Tag: 'Quality'
+  - template: JobTemplates\PublishFunctions.yml      
+
 # - stage: DeployToDevCalculatortApi
 #   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
 #   displayName: Deploy to DEV_API_CALCULATOR

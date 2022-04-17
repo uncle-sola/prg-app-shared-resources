@@ -1,0 +1,44 @@
+jobs:
+- job: PublishFunctions
+  displayName: Publish Functions
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+  - task: CopyFiles@2
+    displayName: 'Copy MonitorAlert files'
+    inputs:
+      Contents: |
+        Modules/** 
+        MonitorAlert/** 
+        host.json 
+        profile.ps1 
+        requirements.psd1 
+        proxies.json 
+      TargetFolder: '$(Build.SourcesDirectory)/MonitorAlertZip'
+      SourceFolder: $(Build.SourcesDirectory)/Functions/MonitorAlert        
+  - task: CopyFiles@2
+    displayName: 'Copy PostMessageToSlack files'
+    inputs:
+      Contents: PostMessageToSlack/**
+      TargetFolder: '$(Build.SourcesDirectory)/MonitorAlertZip'
+      SourceFolder: $(Build.SourcesDirectory)/Functions/PostMessageToSlack
+  - task: CopyFiles@2
+    displayName: 'Copy PayStack files'
+    inputs:
+      Contents: |
+        Modules/** 
+        PayStackAlert/** 
+        requirements.psd1 
+      TargetFolder: '$(Build.SourcesDirectory)/MonitorAlertZip'
+      SourceFolder: $(Build.SourcesDirectory)/Functions/PayStackAlert
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: '$(Build.SourcesDirectory)/MonitorAlertZip'
+      includeRootFolder: false
+      archiveType: zip 
+      archiveFile: '$(Build.ArtifactStagingDirectory)/slack_azure_function.zip' 
+  - task: PublishPipelineArtifact@1
+    displayName: Publish Artifact
+    inputs:
+      targetPath: $(Build.ArtifactStagingDirectory)
+      artifact: Prg.AzureMonitorToSlack
