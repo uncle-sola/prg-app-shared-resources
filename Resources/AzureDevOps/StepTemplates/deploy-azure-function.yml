@@ -1,0 +1,65 @@
+parameters:
+  WebAppName: ''
+  AzureSubscription: ''
+  FunctionAppDomain: ''
+  PackageFile: ''
+  ResourceGroup: ''
+  SharedResourceGroup: ''
+  ApimServiceName: ''
+  ApimProductName: ''
+  ApimApiName: ''
+  SolutionBaseName: ''
+
+
+steps:
+- checkout: mon-devops
+  path: 's/mon-devops/'
+
+- task: AzureRmWebAppDeployment@4
+  displayName: 'Azure App Service Deploy: ${{ parameters.WebAppName }}'
+  inputs:
+    azureSubscription: '${{ parameters.AzureSubscription }}'
+    appType: functionApp
+    WebAppName: '${{ parameters.WebAppName }}'
+    Package: "${{ parameters.PackageFile }}"
+    deployToSlotOrASE: false
+    ResourceGroupName: '${{ parameters.ResourceGroup }}'
+
+- task: AzureCLI@2
+  displayName: 'Switch off authentication'
+  inputs:
+    azureSubscription: '${{ parameters.AzureSubscription }}'
+    scriptType: ps
+    scriptPath: '$(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}.Scripts/Toggle-AppAuthentication.ps1'
+    arguments: ' -ResourceGroup ${{ parameters.ResourceGroup }} -FunctionAppName ${{ parameters.WebAppName }} -Toggle $False -Verbose'
+
+- task: AzurePowerShell@4
+  displayName: 'Import OpenAPI specification'
+  inputs:
+    azureSubscription: '${{ parameters.AzureSubscription }}'
+    ScriptPath: '$(Agent.BuildDirectory)/s/mon-devops//PSCoreScripts/Import-ApimSwaggerApiDefinition.ps1'
+    ScriptArguments: ' -ApimResourceGroup ${{ parameters.SharedResourceGroup }} -InstanceName ${{ parameters.ApimServiceName }} -ApiName ${{ parameters.ApimProductName }}-${{ parameters.ApimApiName }} -ApiPath ${{ parameters.ApimProductName }}/${{ parameters.ApimApiName }} -SwaggerSpecificationUrl https://${{ parameters.WebAppName }}.${{ parameters.FunctionAppDomain }}/swagger/json -OutputFilePath $(Agent.BuildDirectory)/SwaggerFile -Verbose'
+    azurePowerShellVersion: LatestVersion
+
+- task: AzureCLI@2
+  displayName: 'Switch on authentication'
+  inputs:
+    azureSubscription: '${{ parameters.AzureSubscription }}'
+    scriptType: ps
+    scriptPath: '$(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}.Scripts/Toggle-AppAuthentication.ps1'
+    arguments: ' -ResourceGroup ${{ parameters.ResourceGroup }} -FunctionAppName ${{ parameters.WebAppName }} -Toggle $True -Verbose'
+
+
+- task: Tokenization@2 
+  displayName: 'Tokenization: Rate Limit APIM Policy'
+  inputs:
+    SourcePath: '$(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}.ApimPolicies'
+    TargetFileNames: 'ApimPolicy-ManagedAuthentication.xml'
+
+- task: AzurePowerShell@5
+  displayName: 'Apply Managed Authentication APIM Policy'
+  inputs:
+    azureSubscription: '${{ parameters.AzureSubscription }}'
+    ScriptPath: '$(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}.Scripts/Set-ApimPolicy.ps1'
+    ScriptArguments: '-PolicyScope api -ApimResourceGroup ${{ parameters.SharedResourceGroup }} -ApimServiceName ${{ parameters.ApimServiceName }} -PolicyFilePath "$(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}.ApimPolicies/ApimPolicy-ManagedAuthentication.xml" -ApiId CALC-calculator'
+    azurePowerShellVersion: LatestVersion
