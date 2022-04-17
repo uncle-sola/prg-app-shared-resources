@@ -32,6 +32,9 @@ The request object. This is populated via the Azure Function runtime.
 
 Meta-data about the functions invocation. Populated by the Azure Function runtime.
 
+.EXAMPLE
+Run.ps1 -Request Request -TriggerMetadata TriggerMetadata
+
 #>
 
 using namespace System.Net
