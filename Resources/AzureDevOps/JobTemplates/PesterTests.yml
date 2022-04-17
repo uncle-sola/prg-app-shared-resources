@@ -9,6 +9,8 @@ parameters:
 jobs:
 - job: Pester
   displayName: Pester Code Quality Tests
+  pool:
+    vmImage: 'windows-latest'
   workspace:
       clean: all
   steps:
