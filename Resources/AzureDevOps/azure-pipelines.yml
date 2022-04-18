@@ -49,7 +49,7 @@ stages:
       ParentBusiness: '$(ParentBusiness)'
       ServiceOffering: '$(ServiceOffering)'
       ResourceGroup: $(appSharedResourceGroup)
-      DfCDevopsPath: '$(Agent.BuildDirectory)/s/mon-devops'
+      DfCDevopsPath: '$(Agent.BuildDirectory)/s/prg-devops'
       PackageFile:  "$(Pipeline.Workspace)/Prg.AzureMonitorToSlack/slack_azure_function.zip"
       ArmTemplateFolder: "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.Resources.ArmTemplates/"
       EnvironmentName: DEV_APP_SHARED_RESOURCES
