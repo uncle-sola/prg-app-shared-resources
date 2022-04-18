@@ -8,16 +8,13 @@ parameters:
   PackageFile:  ''
   ArmTemplateFolder: ''
   EnvironmentName: ''
-  ApimProductName: ''
   SharedResourceGroup: ''
-  ApimServiceName: ''
   FunctionAppDomain: ''
   ArmOutputVariableName: 'ARMOutputs'
-  ApimApiName: ''
   SolutionBaseName: ''
   Apis: []
   Location: 'West Europe'
-  SetEsfaResourceGroupTagsScript: 'https://raw.githubusercontent.com/olusola-adio/mon-devops/master/PSScripts/Set-EsfaResourceGroupTags.ps1'
+  SetEsfaResourceGroupTagsScript: 'https://raw.githubusercontent.com/uncle-sola/prg-devops/master/PSScripts/Set-EsfaResourceGroupTags.ps1'
   FunctionAppName: ''
 
 jobs:
@@ -41,7 +38,6 @@ jobs:
             ArmOutputVariableName: '${{ parameters.ArmOutputVariableName }}'
             ArmTemplateFolder: '${{ parameters.ArmTemplateFolder }}'
             SolutionBaseName: '${{ parameters.SolutionBaseName }}'
-            FunctionAppName: '${{ parameters.FunctionAppName }}'
 
 - ${{ each apiPartition in parameters.Apis }}:
   - ${{ each api in apiPartition }}:

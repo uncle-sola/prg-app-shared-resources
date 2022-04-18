@@ -1,7 +1,7 @@
 parameters:
   AzureSubscription: ''
   DfCDevopsPath: ''
-  SetEsfaResourceGroupTagsScript: 'https://raw.githubusercontent.com/olusola-adio/mon-devops/master/PSScripts/Set-EsfaResourceGroupTags.ps1'
+  SetEsfaResourceGroupTagsScript: 'https://raw.githubusercontent.com/uncle-sola/prg-devops/master/PSScripts/Set-EsfaResourceGroupTags.ps1'
   EnvironmentTag: ''
   ParentBusiness: ''
   ServiceOffering: ''
@@ -11,11 +11,10 @@ parameters:
   ArmTemplateFolder: ''
   SetTagsScriptFilePath: '$(System.DefaultWorkingDirectory)\Set-EsfaResourceGroupTags.ps1'
   SolutionBaseName: ''
-  FunctionAppName: ''
 
 steps:
-- checkout: mon-devops
-  path: 's/mon-devops/'
+- checkout: prg-devops
+  path: 's/prg-devops/'
 
 - task: PowerShell@2
   name: DownloadSetEsfaResourceGroupTagsScript
@@ -31,14 +30,6 @@ steps:
     ScriptPath: ${{ parameters.SetTagsScriptFilePath }}
     ScriptArguments: '-ResourceGroupName "${{ parameters.ResourceGroup }}" -Location "${{  parameters.Location  }}" -Environment "${{ parameters.EnvironmentTag }}" -ParentBusiness "${{ parameters.ParentBusiness }}" -ServiceOffering "${{ parameters.ServiceOffering }}" -Verbose'
     azurePowerShellVersion: LatestVersion
-
-# - task: AzureCLI@2
-#   displayName: 'Create Function App authentication'
-#   inputs:
-#     azureSubscription: '${{ parameters.AzureSubscription }}'
-#     scriptType: ps
-#     scriptPath: '$(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}.Scripts/Create-AppAuthentication.ps1'
-#     arguments: ' -ResourceGroup ${{ parameters.ResourceGroup }} -FunctionAppName ${{ parameters.FunctionAppName }} -Verbose'
 
 - task: Tokenization@2 
   displayName: 'Tokenization: Transform file parameters.json'

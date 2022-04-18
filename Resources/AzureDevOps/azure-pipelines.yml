@@ -32,11 +32,31 @@ stages:
       Tag: 'Quality'
   - template: JobTemplates\PublishFunctions.yml      
 
-# - stage: DeployToDevCalculatortApi
-#   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
-#   displayName: Deploy to DEV_API_CALCULATOR
-#   variables:
-#   - group: prg-app-shared-resources
-#   - group: prg-app-shared-resources-dev
-#   - group: prg-shared-all
-#   - template: VariableTemplates\DevEnvironmentVariables.yml        
+- stage: DeployToDevCalculatortApi
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  displayName: Deploy to DEV_API_CALCULATOR
+  variables:
+  - group: prg-app-shared-resources
+  - group: prg-app-shared-resources-dev
+  - group: prg-shared-all
+  - template: VariableTemplates\DevEnvironmentVariables.yml
+  
+  jobs:
+  - template: JobTemplates/deploy-environment.yml
+    parameters:
+      AzureSubscription: 'prg (f3b14109-a3de-4f54-9f58-46d891380a7e)'
+      EnvironmentTag: '$(EnvironmentTag)'
+      ParentBusiness: '$(ParentBusiness)'
+      ServiceOffering: '$(ServiceOffering)'
+      ResourceGroup: $(appSharedResourceGroup)
+      DfCDevopsPath: '$(Agent.BuildDirectory)/s/mon-devops'
+      PackageFile:  "$(Pipeline.Workspace)/Prg.AzureMonitorToSlack/slack_azure_function.zip"
+      ArmTemplateFolder: "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.Resources.ArmTemplates/"
+      EnvironmentName: DEV_APP_SHARED_RESOURCES
+      SharedResourceGroup: $(appSharedResourceGroup)
+      FunctionAppDomain: $(FunctionAppDomain)
+      FunctionAppName: $(sharedFunctionAppName)
+      SolutionBaseName: $(SolutionBaseName)
+      Apis:
+        -
+          - azureFunctionName: '${{ variables.FunctionAppName }}'  
