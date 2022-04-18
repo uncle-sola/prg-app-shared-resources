@@ -12,8 +12,8 @@ parameters:
 
 
 steps:
-- checkout: mon-devops
-  path: 's/mon-devops/'
+- checkout: prg-devops
+  path: 's/prg-devops/'
 
 - task: AzureRmWebAppDeployment@4
   displayName: 'Azure App Service Deploy: ${{ parameters.WebAppName }}'
