@@ -25,7 +25,7 @@ stages:
       parameters:
         ArmTemplateRoot: $(ArmTemplateRoot)
         SolutionBaseName: '${{ variables.SolutionBaseName }}'
-  - template: JobTemplates\PesterTests.yml
+  - template: AzureDevOpsTemplates/Build/JobTemplates\PesterTests.yml@prg-devops
     parameters:
       TestsPath: 'tests'
       ResultsPath: 'Publish'
