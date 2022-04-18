@@ -27,8 +27,6 @@ stages:
         SolutionBaseName: '${{ variables.SolutionBaseName }}'
   - template: AzureDevOpsTemplates/Build/JobTemplates\PesterTests.yml@prg-devops
     parameters:
-      TestsPath: 'tests'
-      ResultsPath: 'Publish'
       CodeCoverageResultsFile: 'Pester-Coverage.xml'
       TestResultsFile: 'Test-Pester.xml'
       Tag: 'Quality'
