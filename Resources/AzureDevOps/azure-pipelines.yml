@@ -34,7 +34,7 @@ stages:
 
 - stage: DeployToDevCalculatortApi
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
-  displayName: Deploy to DEV_API_CALCULATOR
+  displayName: 'Deploy to DEV_APP_SHARED_RESOURCES'
   variables:
   - group: prg-app-shared-resources
   - group: prg-app-shared-resources-dev

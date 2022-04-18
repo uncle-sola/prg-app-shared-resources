@@ -20,6 +20,8 @@ parameters:
 jobs:
 - deployment: DeployTemplate
   displayName: "Deploy ARM Templates"
+  pool:
+    vmImage: 'windows-latest'
   environment: ${{ parameters.EnvironmentName }}
   strategy:
     runOnce:
@@ -43,6 +45,8 @@ jobs:
   - ${{ each api in apiPartition }}:
     - deployment: DeployFunction
       displayName: "Deploy Function"
+      pool:
+        vmImage: 'windows-latest'
       environment: ${{ parameters.EnvironmentName }}
       dependsOn: 
       - DeployTemplate
