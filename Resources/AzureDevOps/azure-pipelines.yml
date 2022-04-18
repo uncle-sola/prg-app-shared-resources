@@ -59,4 +59,4 @@ stages:
       SolutionBaseName: $(SolutionBaseName)
       Apis:
         -
-          - azureFunctionName: '$(appSharedPrefix)-fa'
+          - azureFunctionName: '$(appSharedPrefix)-mon-fa'
