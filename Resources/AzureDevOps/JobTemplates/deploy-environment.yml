@@ -41,6 +41,17 @@ jobs:
             ArmTemplateFolder: '${{ parameters.ArmTemplateFolder }}'
             SolutionBaseName: '${{ parameters.SolutionBaseName }}'
 
+- job: TimerDelayJobLab
+  displayName: Timer Delay Job
+  dependsOn: 
+  - DeployTemplate
+  steps:
+  - task: PowerShell@2
+    displayName: "Delay 2 mins app to start"
+    inputs:
+      script: 'Start-Sleep -s 120'
+      targetType: 'inline' # Optional. Options: filePath, inline
+
 - ${{ each apiPartition in parameters.Apis }}:
   - ${{ each api in apiPartition }}:
     - deployment: DeployFunction
@@ -49,7 +60,7 @@ jobs:
         vmImage: 'windows-latest'
       environment: ${{ parameters.EnvironmentName }}
       dependsOn: 
-      - DeployTemplate
+      - TimerDelayJobLab
       strategy:
         runOnce:
           deploy:

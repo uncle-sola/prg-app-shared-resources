@@ -32,7 +32,7 @@ stages:
       Tag: 'Quality'
   - template: JobTemplates\PublishFunctions.yml      
 
-- stage: DeployToDevCalculatortApi
+- stage: DeployToAppSharedResources
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
   displayName: 'Deploy to DEV_APP_SHARED_RESOURCES'
   variables:
