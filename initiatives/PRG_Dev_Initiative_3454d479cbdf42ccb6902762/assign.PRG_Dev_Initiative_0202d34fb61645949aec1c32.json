@@ -1,0 +1,32 @@
+{
+ "sku": {
+  "name": "A0",
+  "tier": "Free"
+ },
+ "identity": {
+  "principalId": "f913ba90-d9fb-46dd-9248-00cc4e4a49d5",
+  "tenantId": "893c6ab5-5aae-4706-be15-dc729e4f10e8",
+  "type": "SystemAssigned"
+ },
+ "properties": {
+  "displayName": "PRG Dev Initiative",
+  "policyDefinitionId": "/subscriptions/f3b14109-a3de-4f54-9f58-46d891380a7e/providers/Microsoft.Authorization/policySetDefinitions/3454d479cbdf42ccb6902762",
+  "scope": "/subscriptions/f3b14109-a3de-4f54-9f58-46d891380a7e",
+  "notScopes": [],
+  "parameters": {},
+  "description": "",
+  "metadata": {
+   "assignedBy": "Uncle Sola",
+   "parameterScopes": {},
+   "createdBy": "cd7d7911-5261-48ea-9c8a-4472c8909219",
+   "createdOn": "2022-04-20T15:49:43.6888059Z",
+   "updatedBy": "cd7d7911-5261-48ea-9c8a-4472c8909219",
+   "updatedOn": "2022-04-20T16:50:39.3432653Z"
+  },
+  "enforcementMode": "Default"
+ },
+ "id": "/subscriptions/f3b14109-a3de-4f54-9f58-46d891380a7e/providers/Microsoft.Authorization/policyAssignments/0202d34fb61645949aec1c32",
+ "type": "Microsoft.Authorization/policyAssignments",
+ "name": "0202d34fb61645949aec1c32",
+ "location": "westeurope"
+}

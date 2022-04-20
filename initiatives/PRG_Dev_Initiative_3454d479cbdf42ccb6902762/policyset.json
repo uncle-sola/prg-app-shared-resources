@@ -1,0 +1,201 @@
+{
+ "properties": {
+  "displayName": "PRG Dev Initiative",
+  "policyType": "Custom",
+  "description": "",
+  "metadata": {
+   "category": "myTags",
+   "version": "1.0",
+   "createdBy": "cd7d7911-5261-48ea-9c8a-4472c8909219",
+   "createdOn": "2022-04-20T15:48:12.0146556Z",
+   "updatedBy": "cd7d7911-5261-48ea-9c8a-4472c8909219",
+   "updatedOn": "2022-04-20T16:45:09.0324734Z"
+  },
+  "parameters": {
+   "Environment": {
+    "type": "string",
+    "metadata": {
+     "displayName": "Environment",
+     "description": null
+    },
+    "defaultValue": "Environment"
+   },
+   "Parent Business": {
+    "type": "string",
+    "metadata": {
+     "displayName": "Parent Business",
+     "description": null
+    },
+    "defaultValue": "Parent Business"
+   },
+   "Service Offering": {
+    "type": "string",
+    "metadata": {
+     "displayName": "Service Offering",
+     "description": null
+    },
+    "defaultValue": "Service Offering"
+   },
+   "Service Line": {
+    "type": "string",
+    "metadata": {
+     "displayName": "Service Line",
+     "description": null
+    },
+    "defaultValue": "Service Line"
+   },
+   "Feature": {
+    "type": "string",
+    "metadata": {
+     "displayName": "Feature",
+     "description": null
+    },
+    "defaultValue": "Feature"
+   },
+   "Service": {
+    "type": "string",
+    "metadata": {
+     "displayName": "Service",
+     "description": null
+    },
+    "defaultValue": "Service"
+   },
+   "Product": {
+    "type": "string",
+    "metadata": {
+     "displayName": "Product",
+     "description": null
+    },
+    "defaultValue": "Product"
+   },
+   "Portfolio": {
+    "type": "string",
+    "metadata": {
+     "displayName": "Portfolio",
+     "description": null
+    },
+    "defaultValue": "Portfolio"
+   }
+  },
+  "policyDefinitions": [
+   {
+    "policyDefinitionReferenceId": "Require Environment Tag and its one of possible value on resource groups_1",
+    "policyDefinitionId": "/subscriptions/f3b14109-a3de-4f54-9f58-46d891380a7e/providers/Microsoft.Authorization/policyDefinitions/91cd0f77-5134-4671-b0e3-a128a8836780",
+    "parameters": {
+     "listofallowedtagValues": {
+      "value": [
+       "Dev/Test"
+      ]
+     }
+    },
+    "groupNames": [
+     "Tagging Group"
+    ]
+   },
+   {
+    "policyDefinitionReferenceId": "Inherit Environment tag from the resource group",
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/cd3aa116-8754-49c9-a813-ad46512ece54",
+    "parameters": {
+     "tagName": {
+      "value": "[parameters('Environment')]"
+     }
+    },
+    "groupNames": [
+     "Tagging Group"
+    ]
+   },
+   {
+    "policyDefinitionReferenceId": "Inherit Parent Business tag from the resource group",
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/cd3aa116-8754-49c9-a813-ad46512ece54",
+    "parameters": {
+     "tagName": {
+      "value": "[parameters('Parent Business')]"
+     }
+    },
+    "groupNames": [
+     "Tagging Group"
+    ]
+   },
+   {
+    "policyDefinitionReferenceId": "Inherit Service Offering tag from the resource",
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/cd3aa116-8754-49c9-a813-ad46512ece54",
+    "parameters": {
+     "tagName": {
+      "value": "[parameters('Service Offering')]"
+     }
+    },
+    "groupNames": [
+     "Tagging Group"
+    ]
+   },
+   {
+    "policyDefinitionReferenceId": "Inherit Service Line tag from the resource group",
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/cd3aa116-8754-49c9-a813-ad46512ece54",
+    "parameters": {
+     "tagName": {
+      "value": "[parameters('Service Line')]"
+     }
+    },
+    "groupNames": [
+     "Tagging Group"
+    ]
+   },
+   {
+    "policyDefinitionReferenceId": "Inherit Feature tag from the resource group",
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/cd3aa116-8754-49c9-a813-ad46512ece54",
+    "parameters": {
+     "tagName": {
+      "value": "[parameters('Feature')]"
+     }
+    },
+    "groupNames": [
+     "Tagging Group"
+    ]
+   },
+   {
+    "policyDefinitionReferenceId": "Inherit Service tag from the resource group",
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/cd3aa116-8754-49c9-a813-ad46512ece54",
+    "parameters": {
+     "tagName": {
+      "value": "[parameters('Service')]"
+     }
+    },
+    "groupNames": [
+     "Tagging Group"
+    ]
+   },
+   {
+    "policyDefinitionReferenceId": "Inherit Product tag from the resource group",
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/cd3aa116-8754-49c9-a813-ad46512ece54",
+    "parameters": {
+     "tagName": {
+      "value": "[parameters('Product')]"
+     }
+    },
+    "groupNames": [
+     "Tagging Group"
+    ]
+   },
+   {
+    "policyDefinitionReferenceId": "Inherit Portfolio tag from the resource group",
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/cd3aa116-8754-49c9-a813-ad46512ece54",
+    "parameters": {
+     "tagName": {
+      "value": "[parameters('Portfolio')]"
+     }
+    },
+    "groupNames": [
+     "Tagging Group"
+    ]
+   }
+  ],
+  "policyDefinitionGroups": [
+   {
+    "name": "Tagging Group"
+   }
+  ]
+ },
+ "id": "/subscriptions/f3b14109-a3de-4f54-9f58-46d891380a7e/providers/Microsoft.Authorization/policySetDefinitions/3454d479cbdf42ccb6902762",
+ "type": "Microsoft.Authorization/policySetDefinitions",
+ "name": "3454d479cbdf42ccb6902762"
+}
