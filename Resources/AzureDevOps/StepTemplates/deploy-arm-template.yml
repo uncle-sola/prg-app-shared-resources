@@ -1,0 +1,56 @@
+parameters:
+  AzureSubscription: ''
+  DfCDevopsPath: ''
+  SetEsfaResourceGroupTagsScript: 'https://raw.githubusercontent.com/uncle-sola/prg-devops/master/PSScripts/Set-EsfaResourceGroupTags.ps1'
+  EnvironmentTag: ''
+  ParentBusiness: ''
+  ServiceOffering: ''
+  ResourceGroup: ''
+  Location: 'West Europe'
+  ArmOutputVariableName: 'ARMOutputs'
+  ArmTemplateFolder: ''
+  SetTagsScriptFilePath: '$(System.DefaultWorkingDirectory)\Set-EsfaResourceGroupTags.ps1'
+  SolutionBaseName: ''
+
+steps:
+- checkout: prg-devops
+  path: 's/prg-devops/'
+
+- task: PowerShell@2
+  name: DownloadSetEsfaResourceGroupTagsScript
+  displayName: 'Download Set-EsfaResourceGroupTags script'
+  inputs:
+    targetType: 'inline'
+    script: Invoke-WebRequest -Uri ${{ parameters.SetEsfaResourceGroupTagsScript }} -OutFile ${{ parameters.SetTagsScriptFilePath }}
+
+- task: AzurePowerShell@3
+  displayName:  "Create resource groups with tags"
+  inputs:
+    azureSubscription: '${{ parameters.AzureSubscription }}'
+    ScriptPath: ${{ parameters.SetTagsScriptFilePath }}
+    ScriptArguments: '-ResourceGroupName "${{ parameters.ResourceGroup }}" -Location "${{  parameters.Location  }}" -Environment "${{ parameters.EnvironmentTag }}" -ParentBusiness "${{ parameters.ParentBusiness }}" -ServiceOffering "${{ parameters.ServiceOffering }}" -Verbose'
+    azurePowerShellVersion: LatestVersion
+
+- task: Tokenization@2 
+  displayName: 'Tokenization: Transform file parameters.json'
+  inputs:
+    SourcePath: '${{ parameters.ArmTemplateFolder }}'
+    TargetFileNames: parameters.json
+
+- task: AzureResourceGroupDeployment@2
+  displayName: 'Azure Deployment:Create Or Update Resource Group action on ${{ parameters.ResourceGroup }}'
+  inputs:
+    azureSubscription: '${{ parameters.AzureSubscription }}'
+    resourceGroupName: '${{ parameters.ResourceGroup }}'
+    location: '${{ parameters.Location }}'
+    csmFile: '${{ parameters.ArmTemplateFolder }}/template.json'
+    csmParametersFile: '${{ parameters.ArmTemplateFolder }}/parameters.json'
+    deploymentOutputs: '$(ArmOutputVariableName)'
+
+- task: DeleteFiles@1
+  displayName: 'Delete tokenised parameters.json file'
+  inputs:
+    SourceFolder: '${{ parameters.ArmTemplateFolder }}'
+    Contents: parameters.json
+  condition: always()
+

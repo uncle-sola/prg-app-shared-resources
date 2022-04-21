@@ -50,7 +50,7 @@
         }
     },
     "variables": {
-        "deploymentUrlBase": "https://raw.githubusercontent.com/olusola-adio/mon-devops/master/ArmTemplates/",
+        "deploymentUrlBase": "https://raw.githubusercontent.com/uncle-sola/prg-devops/master/ArmTemplates/",
         "resourcePrefix": "[tolower(concat('prg-', parameters('environment'), '-app-sharedresources'))]",
         "storageAccountName": "[tolower(concat('prg', parameters('environment'), 'appsharedstr'))]",
         "MonitoringAppServicePlanName": "[concat(variables('ResourcePrefix'), '-mon-asp')]",
