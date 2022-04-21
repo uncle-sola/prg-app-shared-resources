@@ -9,7 +9,7 @@
    "createdBy": "cd7d7911-5261-48ea-9c8a-4472c8909219",
    "createdOn": "2022-04-20T15:48:12.0146556Z",
    "updatedBy": "cd7d7911-5261-48ea-9c8a-4472c8909219",
-   "updatedOn": "2022-04-20T16:45:09.0324734Z"
+   "updatedOn": "2022-04-20T21:11:18.329308Z"
   },
   "parameters": {
    "Environment": {
@@ -75,23 +75,44 @@
      "description": null
     },
     "defaultValue": "Portfolio"
+   },
+   "AllowedEnvironmentValues": {
+    "type": "array",
+    "metadata": {
+     "displayName": "AllowedEnvironmentValues",
+     "description": null
+    },
+    "allowedValues": [
+     "Dev/Test",
+     "Pre-Production",
+     "Production"
+    ],
+    "defaultValue": []
+   },
+   "AllowedParentBusinessValues": {
+    "type": "array",
+    "metadata": {
+     "displayName": "AllowedParentBusinessValues",
+     "description": null
+    },
+    "allowedValues": [
+     "Karis Ministries"
+    ],
+    "defaultValue": []
+   },
+   "AllowedServiceOfferingValues": {
+    "type": "array",
+    "metadata": {
+     "displayName": "AllowedServiceOfferingValues"
+    },
+    "allowedValues": [
+     "Karis Ministries Services",
+     "Karis Ministries Services (PP)"
+    ],
+    "defaultValue": []
    }
   },
   "policyDefinitions": [
-   {
-    "policyDefinitionReferenceId": "Require Environment Tag and its one of possible value on resource groups_1",
-    "policyDefinitionId": "/subscriptions/f3b14109-a3de-4f54-9f58-46d891380a7e/providers/Microsoft.Authorization/policyDefinitions/91cd0f77-5134-4671-b0e3-a128a8836780",
-    "parameters": {
-     "listofallowedtagValues": {
-      "value": [
-       "Dev/Test"
-      ]
-     }
-    },
-    "groupNames": [
-     "Tagging Group"
-    ]
-   },
    {
     "policyDefinitionReferenceId": "Inherit Environment tag from the resource group",
     "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/cd3aa116-8754-49c9-a813-ad46512ece54",
@@ -182,6 +203,51 @@
     "parameters": {
      "tagName": {
       "value": "[parameters('Portfolio')]"
+     }
+    },
+    "groupNames": [
+     "Tagging Group"
+    ]
+   },
+   {
+    "policyDefinitionReferenceId": "Require Environment tag and one of supplied values for resource groups",
+    "policyDefinitionId": "/subscriptions/f3b14109-a3de-4f54-9f58-46d891380a7e/providers/Microsoft.Authorization/policyDefinitions/c732d7ff-a36c-444f-93fb-c1724b0e3228",
+    "parameters": {
+     "tagName": {
+      "value": "[parameters('Environment')]"
+     },
+     "listofallowedtagValues": {
+      "value": "[parameters('AllowedEnvironmentValues')]"
+     }
+    },
+    "groupNames": [
+     "Tagging Group"
+    ]
+   },
+   {
+    "policyDefinitionReferenceId": "Require Praent Business tag and one of supplied values for resource groups",
+    "policyDefinitionId": "/subscriptions/f3b14109-a3de-4f54-9f58-46d891380a7e/providers/Microsoft.Authorization/policyDefinitions/c732d7ff-a36c-444f-93fb-c1724b0e3228",
+    "parameters": {
+     "tagName": {
+      "value": "[parameters('Parent Business')]"
+     },
+     "listofallowedtagValues": {
+      "value": "[parameters('AllowedParentBusinessValues')]"
+     }
+    },
+    "groupNames": [
+     "Tagging Group"
+    ]
+   },
+   {
+    "policyDefinitionReferenceId": "Require Service Offering tag and one of supplied values for resource groups",
+    "policyDefinitionId": "/subscriptions/f3b14109-a3de-4f54-9f58-46d891380a7e/providers/Microsoft.Authorization/policyDefinitions/c732d7ff-a36c-444f-93fb-c1724b0e3228",
+    "parameters": {
+     "tagName": {
+      "value": "[parameters('Service Offering')]"
+     },
+     "listofallowedtagValues": {
+      "value": "[parameters('AllowedServiceOfferingValues')]"
      }
     },
     "groupNames": [
