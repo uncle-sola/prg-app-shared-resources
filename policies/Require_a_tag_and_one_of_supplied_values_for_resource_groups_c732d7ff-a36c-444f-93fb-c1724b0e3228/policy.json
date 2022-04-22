@@ -1,0 +1,52 @@
+{
+ "properties": {
+  "displayName": "Require a tag and one of supplied values for resource groups",
+  "policyType": "Custom",
+  "mode": "All",
+  "metadata": {
+   "category": "MyTags",
+   "createdBy": "cd7d7911-5261-48ea-9c8a-4472c8909219",
+   "createdOn": "2022-04-20T20:28:29.9180462Z",
+   "updatedBy": null,
+   "updatedOn": null
+  },
+  "parameters": {
+   "tagName": {
+    "type": "String",
+    "metadata": {
+     "displayName": "Tag Name",
+     "description": "Name of the tag, such as 'environment'"
+    }
+   },
+   "listofallowedtagValues": {
+    "type": "Array",
+    "metadata": {
+     "displayName": "Tag Values",
+     "description": "Value of the tag, such as 'production'"
+    }
+   }
+  },
+  "policyRule": {
+   "if": {
+    "allOf": [
+     {
+      "field": "type",
+      "equals": "Microsoft.Resources/subscriptions/resourceGroups"
+     },
+     {
+      "not": {
+       "field": "[concat('tags[', parameters('tagName'), ']')]",
+       "in": "[parameters('listofallowedtagValues')]"
+      }
+     }
+    ]
+   },
+   "then": {
+    "effect": "deny"
+   }
+  }
+ },
+ "id": "/subscriptions/f3b14109-a3de-4f54-9f58-46d891380a7e/providers/Microsoft.Authorization/policyDefinitions/c732d7ff-a36c-444f-93fb-c1724b0e3228",
+ "type": "Microsoft.Authorization/policyDefinitions",
+ "name": "c732d7ff-a36c-444f-93fb-c1724b0e3228"
+}
