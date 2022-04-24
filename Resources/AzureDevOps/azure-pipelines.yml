@@ -41,7 +41,7 @@ stages:
       - job: BuildAndTestArmTemplate
         displayName: BuildAndTestArmTemplate
         pool:
-          vmImage: "windows-latest"
+          name: "MyPrivatePool"
         steps:
           - template: AzureDevOpsTemplates/Build/StepTemplates/prg-arm-build.yml@prg-devops
             parameters:

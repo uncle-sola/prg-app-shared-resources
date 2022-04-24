@@ -57,7 +57,7 @@ jobs:
     - deployment: DeployFunction
       displayName: "Deploy Function"
       pool:
-        vmImage: 'windows-latest'
+        name: "MyPrivatePool"
       environment: ${{ parameters.EnvironmentName }}
       dependsOn: 
       - TimerDelayJobLab

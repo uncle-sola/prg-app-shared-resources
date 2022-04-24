@@ -2,7 +2,7 @@ jobs:
 - job: PublishFunctions
   displayName: Publish Functions
   pool:
-    vmImage: 'windows-latest'
+    name: "MyPrivatePool"
   steps:
   - task: CopyFiles@2
     displayName: 'Copy MonitorAlert files'
