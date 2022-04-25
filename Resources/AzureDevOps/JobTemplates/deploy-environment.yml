@@ -21,7 +21,9 @@ jobs:
 - deployment: DeployTemplate
   displayName: "Deploy ARM Templates"
   pool:
-    vmImage: 'windows-latest'
+    name: "MyPrivatePool"
+  workspace:
+      clean: all
   environment: ${{ parameters.EnvironmentName }}
   strategy:
     runOnce:
@@ -43,6 +45,10 @@ jobs:
 
 - job: TimerDelayJobLab
   displayName: Timer Delay Job
+  pool:
+    name: "MyPrivatePool"
+  workspace:
+      clean: all
   dependsOn: 
   - DeployTemplate
   steps:
@@ -57,7 +63,9 @@ jobs:
     - deployment: DeployFunction
       displayName: "Deploy Function"
       pool:
-        vmImage: 'windows-latest'
+        name: "MyPrivatePool"
+      workspace:
+          clean: all
       environment: ${{ parameters.EnvironmentName }}
       dependsOn: 
       - TimerDelayJobLab
